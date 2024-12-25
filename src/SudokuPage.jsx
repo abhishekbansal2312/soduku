@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateBoard, countNumbers, startGame } from "./slices/filterSlice";
+import { updateBoard, countNumbers } from "./slices/filterSlice";
 import Board from "./components/Board";
 import Buttons from "./components/Buttons";
 import StartGame from "./components/StartGame";
@@ -16,7 +16,7 @@ export default function SudokuPage() {
   const dispatch = useDispatch();
 
   const handleInput = (e, rowIndex, colIndex) => {
-    const value = e.target.value === "" ? 0 : parseInt(e.target.value, 10);
+    const value = e.target.value === "" ? 0 : parseInt(e.target.value);
 
     Object.entries(counts).map(([number, count]) => {
       if (number == value && count >= 9) {
@@ -27,7 +27,6 @@ export default function SudokuPage() {
     if (isNaN(value) || value < 0 || value > 9) return;
     dispatch(updateBoard({ rowIndex, colIndex, value }));
   };
-  console.log(color);
 
   return (
     <div className="w-screen h-screen">
@@ -45,7 +44,7 @@ export default function SudokuPage() {
               <Buttons />
             </div>
 
-            <div className="mt-4 flex justify-center text-center">
+            <div className="mt-4 flex justify-center text-center mb-10">
               <span
                 className={`text-xl font-bold ${
                   isValid ? "text-green-500" : "text-red-500"

@@ -21,17 +21,19 @@ export default function Board({ handleInput, validation }) {
               onChange={(e) => handleInput(e, rowIndex, colIndex)}
               className={`w-12 h-12 text-center border border-stone-950 border-collapse 
               ${rowIndex % 3 === 0 && rowIndex !== 0 ? "border-t-2" : ""} 
-       ${colIndex % 3 === 0 && colIndex !== 0 ? "border-l-2" : ""} 
-  ${
-    isGraySection(rowIndex, colIndex)
-      ? "bg-gray-300"
-      : cell === 0
-      ? ""
-      : validation[rowIndex][colIndex]
-      ? "bg-white"
-      : "bg-red-300"
-  }
-`}
+              ${colIndex % 3 === 0 && colIndex !== 0 ? "border-l-2" : ""} 
+              ${
+                isGraySection(rowIndex, colIndex)
+                  ? validation[rowIndex][colIndex]
+                    ? "bg-gray-400"
+                    : "bg-red-300"
+                  : cell === 0
+                  ? ""
+                  : validation[rowIndex][colIndex]
+                  ? "bg-white"
+                  : "bg-red-300"
+              }
+              `}
             />
           ))
         )}

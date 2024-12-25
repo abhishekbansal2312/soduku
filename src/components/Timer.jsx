@@ -1,40 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  startTimer,
+  stopTimer,
+  resetTimer,
+  incrementTime,
+} from "../slices/timerSlice";
 import pause from "../assets/pause.png";
 import resume from "../assets/resume.png";
 import reset from "../assets/reset.png";
-import { useDispatch } from "react-redux";
 import { resetGame } from "../slices/filterSlice";
-export default function Timer() {
-  const [time, setTime] = useState(0);
-  const [isRunning, setIsRunning] = useState(true);
+
+const ResetButton = () => {
   const dispatch = useDispatch();
-  let interval;
+  return (
+    <button
+      onClick={() => {
+        dispatch(resetTimer());
+        dispatch(resetGame());
+      }}
+      className="h-14 w-14 text-white p-2 rounded-lg"
+    >
+      <img src={reset} alt="" />
+    </button>
+  );
+};
+
+const ShowTimer = () => {
+  const dispatch = useDispatch();
+  const { time } = useSelector((state) => state.timer);
 
   useEffect(() => {
-    if (isRunning) {
-      interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 1);
-      }, 1000);
-    } else {
-      clearInterval(interval);
-    }
+    const interval = setInterval(() => {
+      dispatch(incrementTime());
+    }, 1000);
 
     return () => clearInterval(interval);
-  }, [isRunning]);
-
-  const startTimer = () => {
-    setIsRunning(true);
-  };
-
-  const stopTimer = () => {
-    setIsRunning(false);
-  };
-
-  const resetTimerAndGame = () => {
-    setTime(0);
-    setIsRunning(false);
-    dispatch(resetGame());
-  };
+  }, [dispatch]);
 
   const hours = Math.floor(time / 3600);
   const minutes = Math.floor((time % 3600) / 60);
@@ -43,37 +45,44 @@ export default function Timer() {
   const formattedHours = hours.toString().padStart(2, "0");
   const formattedMinutes = minutes.toString().padStart(2, "0");
   const formattedSeconds = seconds.toString().padStart(2, "0");
+  return (
+    <div className="text-xl font-bold">
+      {formattedHours}:{formattedMinutes}:{formattedSeconds}
+    </div>
+  );
+};
+const PauseButton = () => {
+  const dispatch = useDispatch();
+  const { isRunning } = useSelector((state) => state.timer);
+  return (
+    <div>
+      {!isRunning ? (
+        <button
+          onClick={() => dispatch(startTimer())}
+          className=" h-14 w-14 text-white p-2 rounded-lg"
+        >
+          <img src={resume} alt="" />
+        </button>
+      ) : (
+        <button
+          onClick={() => dispatch(stopTimer())}
+          className=" h-14 w-14 text-white p-2 rounded-lg"
+        >
+          <img src={pause} alt="" />
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default function Timer() {
+  const dispatch = useDispatch();
 
   return (
     <div className=" flex justify-between gap-28 items-center">
-      <button
-        onClick={resetTimerAndGame}
-        className="h-14 w-14 text-white p-2 rounded-lg"
-      >
-        <img src={reset} alt="" srcset="" />
-      </button>
-
-      <div className="text-xl font-bold">
-        {formattedHours}:{formattedMinutes}:{formattedSeconds}
-      </div>
-
-      <div className="">
-        {!isRunning ? (
-          <button
-            onClick={startTimer}
-            className=" h-14 w-14 text-white p-2 rounded-lg"
-          >
-            <img src={resume} alt="" srcset="" />
-          </button>
-        ) : (
-          <button
-            onClick={stopTimer}
-            className=" h-14 w-14 text-white p-2 rounded-lg"
-          >
-            <img src={pause} alt="" srcset="" />
-          </button>
-        )}
-      </div>
+      <ResetButton />
+      <ShowTimer />
+      <PauseButton />
     </div>
   );
 }
