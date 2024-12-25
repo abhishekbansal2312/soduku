@@ -47,7 +47,8 @@ const ShowTimer = () => {
   const formattedSeconds = seconds.toString().padStart(2, "0");
   return (
     <div className="text-xl font-bold">
-      {formattedHours}:{formattedMinutes}:{formattedSeconds}
+      {formattedHours > 0 && formattedHours`${":"}`}
+      {formattedMinutes}:{formattedSeconds}
     </div>
   );
 };

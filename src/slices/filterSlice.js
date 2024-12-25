@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createSelector } from "@reduxjs/toolkit";
 
 const checkRow = (board, rowIndex) => {
   const row = board[rowIndex].filter((cell) => cell !== 0);
@@ -43,10 +43,10 @@ const filterSlice = createSlice({
   initialState: {
     gameStarted: false,
     board: myBoard,
-    isBoardValid: true,
     validation: Array(9)
       .fill()
       .map(() => Array(9).fill(true)), // 9x9 array of true
+    steps: [],
   },
 
   reducers: {
@@ -61,25 +61,38 @@ const filterSlice = createSlice({
         checkColumn(state.board, colIndex) &&
         checkBox(state.board, rowIndex, colIndex);
       state.validation[rowIndex][colIndex] = isValid;
-      state.isBoardValid = isValid;
     },
-    resetGame(state, action) {
+    resetGame(state) {
       state.board = myBoard;
+    },
+    addSteps(state, action) {
+      console.log(action.payload);
+      state.steps.push(action.payload);
+    },
+    undoStep(state) {
+      if (state.steps.length > 0) {
+        const lastStep = state.steps.pop();
+        state.board[lastStep.rowIndex][lastStep.colIndex] = 0;
+        state.validation[lastStep.rowIndex][lastStep.colIndex] = true;
+      }
     },
   },
 });
 
-export const { startGame, updateBoard, resetGame } = filterSlice.actions;
+export const { startGame, updateBoard, resetGame, addSteps, undoStep } =
+  filterSlice.actions;
 export default filterSlice.reducer;
 
-export const countNumbers = (state) => {
+export const selectBoard = (state) => state.filter.board;
+
+export const countNumbers = createSelector([selectBoard], (board) => {
   const counts = {};
-  state.filter.board.map((row) => {
-    row.map((cell) => {
+  board.forEach((row) => {
+    row.forEach((cell) => {
       if (cell !== 0) {
         counts[cell] = (counts[cell] || 0) + 1;
       }
     });
   });
   return counts;
-};
+});
