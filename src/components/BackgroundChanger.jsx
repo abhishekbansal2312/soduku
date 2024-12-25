@@ -4,7 +4,7 @@ import { toggleTheme, colors } from "../slices/styleSlice";
 export default function BackgroundChanger() {
   const dispatch = useDispatch();
   return (
-    <div className="background-changer flex flex-col gap-1 mr-6 mt-10">
+    <div className="background-changer flex flex-col gap-1 mx-8 mt-10">
       {colors.map((color) => (
         <button
           key={color}
