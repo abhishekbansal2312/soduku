@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import filterReducer from "../slices/filterSlice";
-import validationReducer from "../slices/validationSlice";
+import styleReducer from "../slices/styleSlice";
 const store = configureStore({
   reducer: {
     filter: filterReducer,
-    validation: validationReducer,
+    style: styleReducer,
   },
 });
 

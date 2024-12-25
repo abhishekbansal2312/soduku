@@ -1,93 +1,67 @@
-import React, { useState } from "react";
-import Board from "./Board";
-import Buttons from "./Buttons";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateBoard } from "./slices/filterSlice";
-import { setValidationStatus } from "./slices/validationSlice";
-import Timer from "./Timer";
-
-const checkRow = (board, rowIndex) => {
-  const row = board[rowIndex].filter((cell) => cell !== 0);
-  const uniqueNumbers = new Set(row);
-  return uniqueNumbers.size === row.length;
-};
-
-const checkColumn = (board, colIndex) => {
-  const col = board.map((row) => row[colIndex]).filter((cell) => cell !== 0);
-  const uniqueNumbers = new Set(col);
-  return uniqueNumbers.size === col.length;
-};
-
-const checkBox = (board, rowIndex, colIndex) => {
-  const startRow = Math.floor(rowIndex / 3) * 3;
-  const startCol = Math.floor(colIndex / 3) * 3;
-  const boxValues = [];
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      const value = board[startRow + i][startCol + j];
-      if (value !== 0) boxValues.push(value);
-    }
-  }
-  const uniqueValues = new Set(boxValues);
-  return uniqueValues.size === boxValues.length;
-};
-
-const checkIncorrectValue = (board, rowIndex, colIndex) => {
-  return (
-    checkRow(board, rowIndex) &&
-    checkColumn(board, colIndex) &&
-    checkBox(board, rowIndex, colIndex)
-  );
-};
+import { updateBoard, countNumbers, startGame } from "./slices/filterSlice";
+import Board from "./components/Board";
+import Buttons from "./components/Buttons";
+import StartGame from "./components/StartGame";
+import BackgroundChanger from "./components/BackgroundChanger";
+import Timer from "./components/Timer";
 
 export default function SudokuPage() {
-  const board = useSelector((state) => state.filter);
-  const isValid = useSelector((state) => state.validation.isValid);
+  const validation = useSelector((state) => state.filter.validation);
+  const isValid = useSelector((state) => state.filter.isBoardValid);
+  const isGameStared = useSelector((state) => state.filter.gameStarted);
+  const color = useSelector((state) => state.style.theme);
+  const counts = useSelector(countNumbers);
   const dispatch = useDispatch();
-  const [isGameStarted, setIsGameStarted] = useState(false);
 
   const handleInput = (e, rowIndex, colIndex) => {
     const value = e.target.value === "" ? 0 : parseInt(e.target.value, 10);
+
+    Object.entries(counts).map(([number, count]) => {
+      if (number == value && count >= 9) {
+        return alert("You can't add more than 9 numbers");
+      }
+    });
+
     if (isNaN(value) || value < 0 || value > 9) return;
-    const updatedBoard = board.map((row, rIdx) =>
-      row.map((cell, cIdx) =>
-        rIdx === rowIndex && cIdx === colIndex ? value : cell
-      )
-    );
-    const isValidCell = checkIncorrectValue(updatedBoard, rowIndex, colIndex);
     dispatch(updateBoard({ rowIndex, colIndex, value }));
-    dispatch(setValidationStatus(isValidCell));
-    if (value === 0) {
-      e.target.style.backgroundColor = "";
-    } else if (!isValidCell) {
-      e.target.style.backgroundColor = "red";
-    } else {
-      e.target.style.backgroundColor = "";
-    }
   };
+  console.log(color);
 
   return (
-    <div className="flex flex-col items-center mt-8">
-      <h1 className="text-2xl font-bold mb-4">Sudoku Game</h1>
-      {isGameStarted ? (
-        <div>
-          <Timer />
-          <Board handleInput={handleInput} board={board} />
-          <Buttons />
-          <div className="mt-4">
-            <span
-              className={`text-xl font-bold ${
-                isValid ? "text-green-500" : "text-red-500"
-              }`}
-            >
-              {isValid ? "Board is Valid!" : "Board is Invalid!"}
-            </span>
+    <div className="w-screen h-screen">
+      {isGameStared ? (
+        <div
+          className="flex flex-row justify-between "
+          style={{ backgroundColor: color }}
+        >
+          <div></div>
+          <div>
+            <h1 className="text-4xl font-bold text-center mt-8">Sudoku</h1>
+            <div className="sudoku-board flex items-center justify-center mt-4 flex-col">
+              <Timer />
+              <Board handleInput={handleInput} validation={validation} />
+              <Buttons />
+            </div>
+
+            <div className="mt-4 flex justify-center text-center">
+              <span
+                className={`text-xl font-bold ${
+                  isValid ? "text-green-500" : "text-red-500"
+                }`}
+              >
+                {isValid ? "Board is Valid!" : "Board is Invalid!"}
+              </span>
+            </div>
+          </div>
+          <div>
+            <BackgroundChanger />
           </div>
         </div>
       ) : (
-        <button onClick={() => setIsGameStarted(true)}>Start Game</button>
+        <StartGame />
       )}
-      <Timer />
     </div>
   );
 }
