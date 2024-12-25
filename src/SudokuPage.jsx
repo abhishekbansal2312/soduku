@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
+import Board from "./Board";
+import Buttons from "./Buttons";
 import { useSelector, useDispatch } from "react-redux";
 import { updateBoard } from "./slices/filterSlice";
 import { setValidationStatus } from "./slices/validationSlice";
+import Timer from "./Timer";
 
 const checkRow = (board, rowIndex) => {
   const row = board[rowIndex].filter((cell) => cell !== 0);
@@ -41,6 +44,7 @@ export default function SudokuPage() {
   const board = useSelector((state) => state.filter);
   const isValid = useSelector((state) => state.validation.isValid);
   const dispatch = useDispatch();
+  const [isGameStarted, setIsGameStarted] = useState(false);
 
   const handleInput = (e, rowIndex, colIndex) => {
     const value = e.target.value === "" ? 0 : parseInt(e.target.value, 10);
@@ -65,29 +69,25 @@ export default function SudokuPage() {
   return (
     <div className="flex flex-col items-center mt-8">
       <h1 className="text-2xl font-bold mb-4">Sudoku Game</h1>
-      <div className="grid grid-cols-9 gap-0.5 border-4 border-black">
-        {board.map((row, rowIndex) =>
-          row.map((cell, colIndex) => (
-            <input
-              key={`${rowIndex}${colIndex}`}
-              value={cell || ""}
-              max={9}
-              min={1}
-              onChange={(e) => handleInput(e, rowIndex, colIndex)}
-              className="w-12 h-12 text-center border"
-            />
-          ))
-        )}
-      </div>
-      <div className="mt-4">
-        <span
-          className={`text-xl font-bold ${
-            isValid ? "text-green-500" : "text-red-500"
-          }`}
-        >
-          {isValid ? "Board is Valid!" : "Board is Invalid!"}
-        </span>
-      </div>
+      {isGameStarted ? (
+        <div>
+          <Timer />
+          <Board handleInput={handleInput} board={board} />
+          <Buttons />
+          <div className="mt-4">
+            <span
+              className={`text-xl font-bold ${
+                isValid ? "text-green-500" : "text-red-500"
+              }`}
+            >
+              {isValid ? "Board is Valid!" : "Board is Invalid!"}
+            </span>
+          </div>
+        </div>
+      ) : (
+        <button onClick={() => setIsGameStarted(true)}>Start Game</button>
+      )}
+      <Timer />
     </div>
   );
 }

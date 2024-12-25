@@ -23,3 +23,15 @@ const filterSlice = createSlice({
 
 export const { updateBoard } = filterSlice.actions;
 export default filterSlice.reducer;
+
+export const countNumbers = (state) => {
+  const counts = {};
+  state.filter.map((row) => {
+    row.map((cell) => {
+      if (cell !== 0) {
+        counts[cell] = (counts[cell] || 0) + 1;
+      }
+    });
+  });
+  return counts;
+};
