@@ -17,7 +17,7 @@ const ResetButton = () => {
     <button
       onClick={() => {
         dispatch(resetTimer());
-        dispatch(resetGame());
+        // dispatch(resetGame());
       }}
       className="h-14 w-14 text-white p-2 rounded-lg"
     >

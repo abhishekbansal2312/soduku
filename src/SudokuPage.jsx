@@ -14,7 +14,9 @@ import BackgroundChanger from "./components/BackgroundChanger";
 import Timer from "./components/Timer";
 
 export default function SudokuPage() {
-  const { validation, gameStarted } = useSelector((state) => state.filter);
+  const { validation, gameStarted, isWinning } = useSelector(
+    (state) => state.filter
+  );
   const color = useSelector((state) => state.style.theme);
   const counts = useSelector(countNumbers);
   const dispatch = useDispatch();
@@ -22,17 +24,15 @@ export default function SudokuPage() {
   const handleInput = (e, rowIndex, colIndex) => {
     const value = e.target.value === "" ? 0 : parseInt(e.target.value);
 
-    Object.entries(counts).map(([number, count]) => {
-      if (number == value && count >= 9) {
-        return alert("You can't add more than 9 numbers");
-      }
-    });
-
     if (isNaN(value) || value < 0 || value > 9) return;
+
+    if (counts[value] >= 9) {
+      alert("You can't add more than 9 of this number.");
+      return;
+    }
+
     dispatch(updateBoard({ rowIndex, colIndex, value }));
-    dispatch(
-      addSteps({ rowIndex: rowIndex, colIndex: colIndex, value: value })
-    );
+    dispatch(addSteps({ rowIndex, colIndex, value }));
   };
 
   return (
@@ -52,10 +52,21 @@ export default function SudokuPage() {
             >
               Undo
             </button>
+            <button
+              className="mt-4 px-6 py-3 bg-red-500 text-white text-xl font-semibold rounded-lg shadow-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-75 transition-all duration-300"
+              onClick={() => dispatch(resetGame())}
+            >
+              Reset
+            </button>
           </div>
 
           <div className="flex-1 text-center">
             <h1 className="text-4xl font-bold mt-10 mb-4">Sudoku</h1>
+            {isWinning && (
+              <p className="text-green-600 text-2xl font-semibold mb-4">
+                🎉 Congratulations! You've completed the Sudoku! 🎉
+              </p>
+            )}
             <div className="sudoku-board flex items-center justify-center flex-col mb-10">
               <Timer />
               <Board handleInput={handleInput} validation={validation} />
