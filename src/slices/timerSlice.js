@@ -29,3 +29,15 @@ export const { startTimer, stopTimer, resetTimer, incrementTime } =
   timerSlice.actions;
 
 export default timerSlice.reducer;
+
+export const selectTimer = (state) => {
+  const hours = Math.floor(state.timer.time / 3600);
+  const minutes = Math.floor((state.timer.time % 3600) / 60);
+  const seconds = state.timer.time % 60;
+
+  const formattedHours = hours.toString().padStart(2, "0");
+  const formattedMinutes = minutes.toString().padStart(2, "0");
+  const formattedSeconds = seconds.toString().padStart(2, "0");
+
+  return { formattedHours, formattedMinutes, formattedSeconds };
+};

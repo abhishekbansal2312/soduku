@@ -1,6 +1,5 @@
 import { createSlice, createSelector } from "@reduxjs/toolkit";
 
-// Helper functions
 const checkRow = (board, rowIndex) => {
   const row = board[rowIndex].filter((cell) => cell !== 0);
   const uniqueNumbers = new Set(row);
@@ -54,15 +53,15 @@ const isWinningBoard = (board) =>
   checkAllBoxes(board);
 
 const myBoard = [
-  [5, 3, 0, 0, 7, 0, 0, 0, 0],
-  [6, 0, 0, 1, 9, 5, 0, 0, 0],
-  [0, 9, 8, 0, 0, 0, 0, 6, 0],
-  [8, 0, 0, 0, 6, 0, 0, 0, 3],
-  [4, 0, 0, 8, 0, 3, 0, 0, 1],
-  [7, 0, 0, 0, 2, 0, 0, 0, 6],
-  [0, 6, 0, 0, 0, 0, 2, 8, 0],
-  [0, 0, 0, 4, 1, 9, 0, 0, 5],
-  [0, 0, 0, 0, 8, 0, 0, 7, 9],
+  [5, 3, 4, 6, 7, 8, 9, 1, 2],
+  [6, 7, 2, 1, 9, 5, 3, 4, 8],
+  [1, 9, 8, 3, 4, 2, 5, 6, 7],
+  [8, 5, 9, 7, 6, 1, 4, 2, 3],
+  [4, 2, 6, 8, 5, 3, 7, 9, 0],
+  [7, 1, 3, 9, 2, 4, 8, 5, 6],
+  [9, 6, 1, 5, 3, 7, 2, 8, 4],
+  [2, 8, 7, 4, 1, 9, 6, 3, 5],
+  [3, 4, 5, 2, 8, 6, 1, 7, 9],
 ];
 
 const filterSlice = createSlice({
@@ -75,6 +74,7 @@ const filterSlice = createSlice({
       .map(() => Array(9).fill(true)),
     steps: [],
     isWinning: false,
+    isEditable: myBoard.map((row) => row.map((cell) => cell === 0)),
   },
 
   reducers: {
@@ -98,7 +98,7 @@ const filterSlice = createSlice({
         .fill()
         .map(() => Array(9).fill(true));
       state.steps = [];
-      state.isWinning = false;
+      state.isWinning = false; // Reset winning state
     },
     addSteps(state, action) {
       state.steps.push(action.payload);

@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 
 export default function Board({ handleInput, validation }) {
   const board = useSelector((state) => state.filter.board);
+  const isEditable = useSelector((state) => state.filter.isEditable);
 
   const isGraySection = (rowIndex, colIndex) => {
     return (Math.floor(rowIndex / 3) + Math.floor(colIndex / 3)) % 2 === 1;
@@ -19,6 +20,7 @@ export default function Board({ handleInput, validation }) {
               max={9}
               min={1}
               onChange={(e) => handleInput(e, rowIndex, colIndex)}
+              disabled={!isEditable[rowIndex][colIndex]} // Use isEditable here
               className={`w-12 h-12 text-center border border-stone-950 border-collapse 
               ${rowIndex % 3 === 0 && rowIndex !== 0 ? "border-t-2" : ""} 
               ${colIndex % 3 === 0 && colIndex !== 0 ? "border-l-2" : ""} 

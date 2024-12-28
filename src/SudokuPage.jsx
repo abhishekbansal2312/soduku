@@ -12,6 +12,8 @@ import Buttons from "./components/Buttons";
 import StartGame from "./components/StartGame";
 import BackgroundChanger from "./components/BackgroundChanger";
 import Timer from "./components/Timer";
+import { stopTimer } from "./slices/timerSlice";
+import Winning from "./components/Winning";
 
 export default function SudokuPage() {
   const { validation, gameStarted, isWinning } = useSelector(
@@ -34,6 +36,10 @@ export default function SudokuPage() {
     dispatch(updateBoard({ rowIndex, colIndex, value }));
     dispatch(addSteps({ rowIndex, colIndex, value }));
   };
+
+  if (isWinning) {
+    dispatch(stopTimer());
+  }
 
   return (
     <div
@@ -81,6 +87,7 @@ export default function SudokuPage() {
       ) : (
         <StartGame />
       )}
+      {isWinning && <Winning />}
     </div>
   );
 }
