@@ -29,7 +29,6 @@ export default function SudokuPage() {
     if (isNaN(value) || value < 0 || value > 9) return;
 
     if (counts[value] >= 9) {
-      alert("You can't add more than 9 of this number.");
       return;
     }
 
